@@ -22,6 +22,10 @@ Use Chrome or Edge with Web Bluetooth enabled, Bluetooth on, and the radio adver
 
 The protocol specifies 9,600 baud over BTLE. BLE GATT does not expose a browser baud-rate setting; the radio firmware/bridge must provide the CAT UART behavior.
 
+## Run live
+
+https://nicsure.github.io/nicFW950_BTLE_CAT_Interface/
+
 ## Run locally
 
 No Node.js, package installation, bundler, or build step is needed.
