@@ -41,7 +41,7 @@ button:disabled,input:disabled,select:disabled{opacity:.5}
 .connection-details p{margin:.25rem 0 0}
 .panel-heading,.meter-heading{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
 .control-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.55rem;margin-top:.65rem}
-.frequency-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem;margin-top:.55rem}
+.frequency-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.55rem;margin-top:.55rem}
 .control-grid label,.frequency-grid label{display:flex;flex-direction:column;gap:.25rem;min-width:0;color:var(--muted);font-size:.78rem}
 .control-grid input,.control-grid select,.frequency-grid input{width:100%;color:var(--text);font-size:.9rem}
 .frequency-grid input{font-size:1.3rem;font-weight:650;padding:.55rem .65rem;font-variant-numeric:tabular-nums}
@@ -67,6 +67,6 @@ form input{flex:1;min-width:140px;font-family:ui-monospace,Consolas,monospace}
 @media(max-width:700px){
   main{padding:.7rem;gap:.55rem}header{align-items:flex-start}
   .header-meta{justify-content:flex-end;flex-wrap:wrap}
-  .control-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .control-grid,.frequency-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .radio-actions{flex-direction:column}.keypad-wrap{align-items:flex-start}
 }
