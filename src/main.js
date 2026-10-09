@@ -1,4 +1,6 @@
 import { SIGNAL_FLOORS } from "./config.js";
+
+const DEFAULT_FREQUENCY_STEP_KHZ = 0.01; // 0.01 kHz = 10 Hz
 import { CatSession } from "./cat/CatSession.js";
 import { BleTransport } from "./transport/BleTransport.js";
 
@@ -6,19 +8,17 @@ const $ = (id) => document.getElementById(id);
 const ui = {
   status:$("status"), detail:$("connection-detail"), connect:$("connect"), disconnect:$("disconnect"),
   refresh:$("refresh"), clear:$("clear"), terminal:$("terminal"), form:$("send-form"),
-  command:$("command"), send:$("send"), activity:$("cat-activity"), light:$("light-mode"), dark:$("dark-mode"),
+  command:$("command"), send:$("send"), light:$("light-mode"), dark:$("dark-mode"),
   modulationActual:$("modulation-actual"), bandwidthActual:$("bandwidth-actual"),
   vfo:$("vfo"), mode:$("mode"), channel:$("channel"), group:$("group"), rx:$("rx-frequency"),
-  tx:$("tx-frequency"), modulation:$("modulation"), bandwidth:$("bandwidth"), power:$("tx-power"),
+  tx:$("tx-frequency"), frequencyStep:$("frequency-step"), modulation:$("modulation"), bandwidth:$("bandwidth"), power:$("tx-power"),
   squelch:$("squelch-state"), signal:$("signal-value"), signalMeter:$("signal-meter"),
   signalS:$("signal-s-unit"), noise:$("noise-value"), noiseMeter:$("noise-meter"), ptt:$("ptt"), keypad:$("keypad"),
 };
 const MAX_LOG_CHARS = 256;
 const transport = new BleTransport();
 const radio = { vfo:"A", mode:0, rxHz:null, txHz:null, channel:1, group:"A" };
-const session = new CatSession(transport, appendLog, handleRadioLine, handleTransaction, (message) => {
-  ui.activity.textContent = message;
-});
+const session = new CatSession(transport, appendLog, handleRadioLine, handleTransaction);
 const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
 let manualTheme = false;
 
@@ -159,6 +159,16 @@ ui.channel.addEventListener("change", () => {
   queue("C " + String(value).padStart(3, "0"));
 });
 ui.group.addEventListener("change", () => queue("G " + ui.group.value));
+ui.frequencyStep.value = String(DEFAULT_FREQUENCY_STEP_KHZ);
+function updateFrequencyStep() {
+  const stepKhz = Number(ui.frequencyStep.value);
+  if (!Number.isFinite(stepKhz) || stepKhz <= 0) return;
+  const stepMhz = stepKhz / 1000;
+  ui.rx.step = String(stepMhz);
+  ui.tx.step = String(stepMhz);
+}
+ui.frequencyStep.addEventListener("change", updateFrequencyStep);
+updateFrequencyStep();
 ui.rx.addEventListener("change", () => setFrequency("F", ui.rx));
 ui.tx.addEventListener("change", () => setFrequency("T", ui.tx));
 ui.modulation.addEventListener("change", () => queue("Q " + ui.modulation.value));

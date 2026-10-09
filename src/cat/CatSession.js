@@ -2,12 +2,11 @@ import { COMMAND_GAP_MS, COMMAND_TERMINATOR, POLL_INTERVAL_MS, RESPONSE_TIMEOUT_
 const asciiEncoder = new TextEncoder();
 
 export class CatSession {
-  constructor(transport, onLog, onLine, onTransaction, onActivity) {
+  constructor(transport, onLog, onLine, onTransaction) {
     this.transport = transport;
     this.onLog = onLog;
     this.onLine = onLine;
     this.onTransaction = onTransaction;
-    this.onActivity = onActivity;
     this.running = false;
     this.queue = [];
     this.pending = null;
@@ -21,7 +20,6 @@ export class CatSession {
 
   async start() {
     this.running = true;
-    this.setActivity("Checking CAT prompt…");
     this.onLog("> <CR> (communication check)");
     try {
       await this.transport.send(asciiEncoder.encode(COMMAND_TERMINATOR));
@@ -33,7 +31,6 @@ export class CatSession {
       this.pollTimer = setInterval(() => this.pollIfIdle(), POLL_INTERVAL_MS);
     } catch (error) {
       this.onLog("! CAT startup failed: " + errorMessage(error));
-      this.setActivity("CAT startup failed");
     }
   }
 
@@ -45,7 +42,6 @@ export class CatSession {
     clearTimeout(this.pumpTimer);
     clearInterval(this.pollTimer);
     this.pollTimer = null;
-    this.setActivity("CAT idle");
   }
 
   refresh() {
@@ -79,7 +75,6 @@ export class CatSession {
       this.pending = item;
       this.lastSentAt = Date.now();
       this.onLog("> " + (item.command || "<CR>"));
-      this.setActivity("Waiting for " + item.key + "…");
       try {
         await this.transport.send(asciiEncoder.encode(item.wire));
       } catch (error) {
@@ -114,7 +109,6 @@ export class CatSession {
           this.receiveBuffer = "";
           this.onLog("< cmd:");
           if (this.pending?.key === "cmd") this.finishPending(true);
-          if (this.running && !this.pending) this.setActivity("Ready");
         }
       }
     }
@@ -140,7 +134,6 @@ export class CatSession {
     this.pending = null;
     if (item && !replied) this.onTransaction(item, null);
     if (this.running) {
-      this.setActivity(this.queue.length ? "Command queued" : "Ready");
       this.pumpTimer = setTimeout(() => {
         this.pumpTimer = null;
         this.pump();
@@ -148,7 +141,6 @@ export class CatSession {
     }
   }
 
-  setActivity(message) { this.onActivity(message); }
 }
 function delay(ms) { return new Promise((resolve) => setTimeout(resolve, ms)); }
 function errorMessage(error) { return error instanceof Error ? error.message : String(error); }
