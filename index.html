@@ -13,7 +13,7 @@
       <header>
         <div><h1>nicFW950 CAT Interface</h1><span class="subtitle">Bluetooth Low Energy radio control</span></div>
         <div class="header-meta">
-          <span class="version" title="Application version">V1.02</span>
+          <span class="version" title="Application version">V1.03</span>
           <div class="theme-controls" role="group" aria-label="Color theme">
             <button id="light-mode" type="button" aria-pressed="false">Light mode</button>
             <button id="dark-mode" type="button" aria-pressed="false">Dark mode</button>
@@ -41,7 +41,8 @@
         </div>
         <div class="frequency-grid">
           <label>RX frequency (MHz)<input id="rx-frequency" type="number" min="18" max="1300" step="0.00001" placeholder="e.g. 435.546000" disabled /></label>
-          <label>TX frequency (MHz)<input id="tx-frequency" type="number" min="18" max="1300" step="0.00001" placeholder="e.g. 443.123500" disabled /></label>\n          <label>Step (kHz)<input id="frequency-step" type="number" min="0.01" step="0.01" value="0.01" aria-describedby="frequency-step-help" disabled /><small id="frequency-step-help">RX/TX tuning increment</small></label>
+          <label>TX frequency (MHz)<input id="tx-frequency" type="number" min="18" max="1300" step="0.00001" placeholder="e.g. 443.123500" disabled /></label>
+          <label>Step (kHz)<input id="frequency-step" type="number" min="0.01" step="0.01" value="0.01" aria-describedby="frequency-step-help" disabled /><small id="frequency-step-help">RX/TX tuning increment</small></label>
         </div>
         <p class="help">In Channel or Group mode, changing a frequency permanently updates that programmed channel.</p>
         <div class="control-grid compact-grid">
