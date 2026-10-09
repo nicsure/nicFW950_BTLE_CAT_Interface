@@ -120,6 +120,10 @@ function handleTransaction(item, response) {
     if (radio.mode === 1) queue("C");
     if (radio.mode === 2) queue("G");
   }
+  if ((item.key === "C" || item.key === "G") && response.startsWith(item.key + " ")) {
+    queue("F");
+    queue("T");
+  }
 }
 function updateModeControls() {
   ui.channel.disabled = transport.state !== "connected" || radio.mode === 0;
