@@ -7,11 +7,13 @@ const ui = {
   status:$("status"), detail:$("connection-detail"), connect:$("connect"), disconnect:$("disconnect"),
   refresh:$("refresh"), clear:$("clear"), terminal:$("terminal"), form:$("send-form"),
   command:$("command"), send:$("send"), activity:$("cat-activity"), light:$("light-mode"), dark:$("dark-mode"),
+  modulationActual:$("modulation-actual"), bandwidthActual:$("bandwidth-actual"),
   vfo:$("vfo"), mode:$("mode"), channel:$("channel"), group:$("group"), rx:$("rx-frequency"),
   tx:$("tx-frequency"), modulation:$("modulation"), bandwidth:$("bandwidth"), power:$("tx-power"),
   squelch:$("squelch-state"), signal:$("signal-value"), signalMeter:$("signal-meter"),
   signalS:$("signal-s-unit"), noise:$("noise-value"), noiseMeter:$("noise-meter"), ptt:$("ptt"), keypad:$("keypad"),
 };
+const MAX_LOG_CHARS = 256;
 const transport = new BleTransport();
 const radio = { vfo:"A", mode:0, rxHz:null, txHz:null, channel:1, group:"A" };
 const session = new CatSession(transport, appendLog, handleRadioLine, handleTransaction, (message) => {
@@ -64,7 +66,8 @@ function setControlsEnabled(enabled) {
 }
 function appendLog(message) {
   const stick = ui.terminal.scrollTop + ui.terminal.clientHeight >= ui.terminal.scrollHeight - 4;
-  ui.terminal.appendChild(document.createTextNode(message + "\n"));
+  const nextText = ui.terminal.textContent + message + "\n";
+  ui.terminal.textContent = nextText.slice(-MAX_LOG_CHARS);
   if (stick) ui.terminal.scrollTop = ui.terminal.scrollHeight;
 }
 function queue(command) {
@@ -87,9 +90,15 @@ function handleRadioLine(line) {
   } else if (command === "G" && /^[A-Z]$/.test(parts[1] || "")) {
     radio.group = parts[1]; ui.group.value = radio.group;
   } else if (command === "Q" && /^[012]$/.test(parts[1] || "")) {
-    ui.modulation.value = parts[2] === "A" ? "3" : parts[1];
+    const actual = ["FM", "AM", "DSB"][Number(parts[1])];
+    const automatic = parts[2] === "A";
+    ui.modulation.value = automatic ? "3" : parts[1];
+    ui.modulationActual.textContent = "Actual: " + actual + (automatic ? " (automatic)" : "");
   } else if (command === "B" && /^[WN]$/.test(parts[1] || "")) {
-    ui.bandwidth.value = parts[2] === "A" ? "A" : parts[1];
+    const actual = parts[1] === "W" ? "Wide" : "Narrow";
+    const automatic = parts[2] === "A";
+    ui.bandwidth.value = automatic ? "A" : parts[1];
+    ui.bandwidthActual.textContent = "Actual: " + actual + (automatic ? " (automatic)" : "");
   } else if (command === "Y" && /^[0-6]$/.test(parts[1] || "")) {
     ui.power.value = parts[1];
   } else if (command === "S" && /^[01]$/.test(parts[1] || "")) {
