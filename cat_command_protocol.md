@@ -41,6 +41,8 @@ Implementations are encouraged to use the detection of a CR (ASCII 13) **ONLY** 
   
 All text communication is plain 8 bit ASCII, only characters from 'Space' (ASCII 32) to '~' (ASCII 126) and 'CR' (ASCII 13) are accepted.  
 
+Implementations are encouraged NOT to wait for replies, but to process incoming data as it arrives and then update any elements based on incoming data. BTLE in particular may drop data, so the system may be left waiting for a reply that will never come. Commands can be sent before the reply to a previous command arrives, however it is recommended to use a state variable that is set when a command is sent and cleared when the reply arrives. If this state variable is set when a command is needing to be sent, a small delay of 100 ms should occur before sending and the state variable reset conditions updated. The state variable should be cleared if no reply arrives within one second.
+
 ---
 
 > ⚠️ Note: The list below documents all currently available CAT commands.  
