@@ -13,7 +13,7 @@
       <header>
         <div><h1>nicFW950 CAT Interface</h1><span class="subtitle">Bluetooth Low Energy radio control</span></div>
         <div class="header-meta">
-          <span class="version" title="Application version">V1.01</span>
+          <span class="version" title="Application version">V1.02</span>
           <div class="theme-controls" role="group" aria-label="Color theme">
             <button id="light-mode" type="button" aria-pressed="false">Light mode</button>
             <button id="dark-mode" type="button" aria-pressed="false">Dark mode</button>
@@ -32,7 +32,7 @@
         <p id="connection-detail" role="status" aria-live="polite">Disconnected. Select Connect to choose the radio.</p>
       </section>
       <section id="radio-controls" class="radio-panel" aria-label="Radio controls">
-        <div class="panel-heading"><h2>Radio</h2><span id="cat-activity" class="muted">CAT idle</span></div>
+        <div class="panel-heading"><h2>Radio</h2></div>
         <div class="control-grid">
           <label>Active VFO<select id="vfo" disabled><option value="A">VFO A</option><option value="B">VFO B</option><option value="C">VFO C</option></select></label>
           <label>Mode<select id="mode" disabled><option value="0">Frequency</option><option value="1">Channel</option><option value="2">Group</option></select></label>
@@ -40,8 +40,8 @@
           <label>Group<select id="group" disabled></select></label>
         </div>
         <div class="frequency-grid">
-          <label>RX frequency (MHz)<input id="rx-frequency" type="number" min="18" max="1300" step="0.000001" placeholder="e.g. 435.546000" disabled /></label>
-          <label>TX frequency (MHz)<input id="tx-frequency" type="number" min="18" max="1300" step="0.000001" placeholder="e.g. 443.123500" disabled /></label>
+          <label>RX frequency (MHz)<input id="rx-frequency" type="number" min="18" max="1300" step="0.00001" placeholder="e.g. 435.546000" disabled /></label>
+          <label>TX frequency (MHz)<input id="tx-frequency" type="number" min="18" max="1300" step="0.00001" placeholder="e.g. 443.123500" disabled /></label>\n          <label>Step (kHz)<input id="frequency-step" type="number" min="0.01" step="0.01" value="0.01" aria-describedby="frequency-step-help" disabled /><small id="frequency-step-help">RX/TX tuning increment</small></label>
         </div>
         <p class="help">In Channel or Group mode, changing a frequency permanently updates that programmed channel.</p>
         <div class="control-grid compact-grid">
