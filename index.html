@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>nicFW950 CAT Interface</title>
+    <link rel="stylesheet" href="./src/style.css" />
+    <script type="module" src="./src/main.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div><h1>nicFW950 CAT Interface</h1><span class="subtitle">Bluetooth Low Energy radio control</span></div>
+        <div class="header-meta">
+          <span class="version" title="Application version">V1.00</span>
+          <div class="theme-controls" role="group" aria-label="Color theme">
+            <button id="light-mode" type="button" aria-pressed="false">Light mode</button>
+            <button id="dark-mode" type="button" aria-pressed="false">Dark mode</button>
+          </div>
+          <span id="status" class="status disconnected">Disconnected</span>
+        </div>
+      </header>
+      <div class="toolbar">
+        <button id="connect" type="button">Connect</button>
+        <button id="disconnect" type="button" disabled>Disconnect</button>
+        <button id="refresh" type="button" disabled>Read radio</button>
+        <button id="clear" type="button">Clear log</button>
+      </div>
+      <section class="connection-details" aria-label="Bluetooth connection details">
+        <strong>Connection details</strong>
+        <p id="connection-detail" role="status" aria-live="polite">Disconnected. Select Connect to choose the radio.</p>
+      </section>
+      <section id="radio-controls" class="radio-panel" aria-label="Radio controls">
+        <div class="panel-heading"><h2>Radio</h2><span id="cat-activity" class="muted">CAT idle</span></div>
+        <div class="control-grid">
+          <label>Active VFO<select id="vfo" disabled><option value="A">VFO A</option><option value="B">VFO B</option><option value="C">VFO C</option></select></label>
+          <label>Mode<select id="mode" disabled><option value="0">Frequency</option><option value="1">Channel</option><option value="2">Group</option></select></label>
+          <label>Channel<input id="channel" type="number" min="1" max="999" step="1" value="1" disabled /></label>
+          <label>Group<select id="group" disabled></select></label>
+        </div>
+        <div class="frequency-grid">
+          <label>RX frequency (MHz)<input id="rx-frequency" type="number" min="18" max="1300" step="0.000001" placeholder="e.g. 435.546000" disabled /></label>
+          <label>TX frequency (MHz)<input id="tx-frequency" type="number" min="18" max="1300" step="0.000001" placeholder="e.g. 443.123500" disabled /></label>
+        </div>
+        <p class="help">In Channel or Group mode, changing a frequency permanently updates that programmed channel.</p>
+        <div class="control-grid compact-grid">
+          <label>Modulation<select id="modulation" disabled><option value="0">FM</option><option value="1">AM</option><option value="2">DSB</option><option value="3">Automatic</option></select></label>
+          <label>Bandwidth<select id="bandwidth" disabled><option value="W">Wide</option><option value="N">Narrow</option><option value="A">Automatic</option></select></label>
+          <label>TX power<select id="tx-power" disabled><option value="0">Disabled</option><option value="1">Zero</option><option value="2">Very low</option><option value="3">Low</option><option value="4">Medium</option><option value="5">High</option><option value="6">Very high</option></select></label>
+          <div class="squelch-card"><span class="field-caption">Squelch</span><strong id="squelch-state" class="squelch">—</strong></div>
+        </div>
+        <div class="meter-grid">
+          <div class="meter-card"><div class="meter-heading"><span>Signal</span><strong id="signal-value">—</strong></div><progress id="signal-meter" max="9" value="0"></progress><small id="signal-s-unit">Waiting for radio data</small></div>
+          <div class="meter-card"><div class="meter-heading"><span>External noise</span><strong id="noise-value">—</strong></div><progress id="noise-meter" max="999" value="0"></progress><small>BK4819 register level</small></div>
+        </div>
+        <div class="radio-actions">
+          <div><button id="ptt" class="ptt" type="button" disabled aria-label="Hold to transmit">Hold to transmit</button><small class="help">Releases PTT when you let go.</small></div>
+          <div class="keypad-wrap"><strong>Radio keys</strong><div id="keypad" class="keypad" aria-label="Radio keypad"></div></div>
+        </div>
+        <p class="warning">PTT transmits RF. Keypad controls emulate physical radio buttons. Use with care.</p>
+      </section>
+      <pre id="terminal" aria-label="CAT activity log" aria-live="polite"></pre>
+      <form id="send-form" autocomplete="off">
+        <input id="command" type="text" placeholder="Enter CAT command, e.g. F or Z" spellcheck="false" disabled />
+        <button id="send" type="submit" disabled>Send</button>
+      </form>
+      <p class="help footer-help">Commands end with CR only. E 2 (replies and prompt) is enabled on connection. E 0 disables all radio replies.</p>
+    </main>
+  </body>
+</html>
