@@ -526,6 +526,11 @@ Where X is the current squelch state
 1 = Open 
 
 Queries the current state of the radio's squelch.  
+  
+Note: This command does not set the Squelch level, only queries the squelch state. I.e. if there is a strong enough signal present to unmute the speaker.  
+To change or query the Squelch level use the W command  
+* Setting: `W 0004 2 00000` to `W 0004 2 00009` for squelch levels 0 to 9.
+* Query: `W 0004 2` which will give the response `W 0004 2 0000X` where X is the current Squelch level.
 
 ---
 
