@@ -2,6 +2,10 @@
 
 A browser radio front end for the radio CAT protocol over Bluetooth Low Energy. It keeps the working console's layout and adds controls for VFO, mode, frequencies, channel/group, modulation, bandwidth, TX power, PTT, keypad, squelch, and signal/noise.
 
+## Transmitting warning
+
+**WARNING:** When transmitting, use a suitable external antenna and position it well away from the phone or computer running this CAT interface. A handheld antenna close to the device can expose it to very strong RF energy, which may overwhelm or interfere with the much weaker Bluetooth Low Energy signal and interrupt the connection. Keep the antenna separated from the device during transmission.
+
 ## Protocol reference
 
 The complete command list and device behavior are documented in [cat_command_protocol.md](./cat_command_protocol.md).
