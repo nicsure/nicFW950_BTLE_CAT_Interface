@@ -12,7 +12,7 @@ const ui = {
   modulationActual:$("modulation-actual"), bandwidthActual:$("bandwidth-actual"),
   vfo:$("vfo"), mode:$("mode"), channel:$("channel"), group:$("group"), rx:$("rx-frequency"),
   tx:$("tx-frequency"), frequencyStep:$("frequency-step"), modulation:$("modulation"), bandwidth:$("bandwidth"), power:$("tx-power"),
-  squelch:$("squelch-state"), signal:$("signal-value"), signalMeter:$("signal-meter"),
+  squelch:$("squelch-state"), squelchLevel:$("squelch-level"), squelchLevelValue:$("squelch-level-value"), signal:$("signal-value"), signalMeter:$("signal-meter"),
   signalS:$("signal-s-unit"), noise:$("noise-value"), noiseMeter:$("noise-meter"), ptt:$("ptt"), keypad:$("keypad"),
 };
 const MAX_LOG_CHARS = 256;
@@ -101,6 +101,10 @@ function handleRadioLine(line) {
     ui.bandwidthActual.textContent = "Actual: " + actual + (automatic ? " (automatic)" : "");
   } else if (command === "Y" && /^[0-6]$/.test(parts[1] || "")) {
     ui.power.value = parts[1];
+  } else if (command === "W" && parts[1] === "0004" && /^0000[0-9]$/.test(parts[parts.length - 1] || "")) {
+    const level = Number(parts[parts.length - 1]);
+    ui.squelchLevel.value = String(level);
+    ui.squelchLevelValue.value = String(level);
   } else if (command === "S" && /^[01]$/.test(parts[1] || "")) {
     renderSquelch(parts[1]);
   } else if (command === "D" && /^\d{3}$/.test(parts[1] || "") && /^\d{3}$/.test(parts[2] || "")) {
@@ -163,6 +167,11 @@ ui.channel.addEventListener("change", () => {
   queue("C " + String(value).padStart(3, "0"));
 });
 ui.group.addEventListener("change", () => queue("G " + ui.group.value));
+ui.squelchLevel.addEventListener("input", () => { ui.squelchLevelValue.value = ui.squelchLevel.value; });
+ui.squelchLevel.addEventListener("change", () => {
+  const level = Number(ui.squelchLevel.value);
+  if (Number.isInteger(level) && level >= 0 && level <= 9) queue("W 0004 2 " + String(level).padStart(5, "0"));
+});
 ui.frequencyStep.value = String(DEFAULT_FREQUENCY_STEP_KHZ);
 function updateFrequencyStep() {
   const stepKhz = Number(ui.frequencyStep.value);
