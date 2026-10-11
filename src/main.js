@@ -18,6 +18,8 @@ const ui = {
 const MAX_LOG_CHARS = 256;
 const transport = new BleTransport();
 const radio = { vfo:"A", mode:0, rxHz:null, txHz:null, channel:1, group:"A" };
+let frequencyStepSynced = false;
+let confirmedFrequencyStepUnits = 1;
 const session = new CatSession(transport, appendLog, handleRadioLine, handleTransaction);
 const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
 let manualTheme = false;
@@ -47,8 +49,8 @@ for (let number = 0; number <= 9; number += 1) addKey(String(number));
 for (const key of ["G","R","U","D","*","#","S","T","E"]) addKey(key);
 transport.onStateChange = (state, message) => {
   renderConnection(state, message);
-  if (state === "connected") { setControlsEnabled(true); session.start(); }
-  else { session.stop(); setControlsEnabled(false); }
+  if (state === "connected") { frequencyStepSynced = false; setControlsEnabled(true); session.start(); }
+  else { frequencyStepSynced = false; session.stop(); setControlsEnabled(false); }
 };
 
 function renderConnection(state, message) {
@@ -62,6 +64,7 @@ function renderConnection(state, message) {
 }
 function setControlsEnabled(enabled) {
   for (const element of document.querySelectorAll("#radio-controls select, #radio-controls input, #ptt, #keypad button, #refresh, #command, #send")) element.disabled = !enabled;
+  ui.frequencyStep.disabled = !enabled || !frequencyStepSynced;
   if (enabled) updateModeControls();
 }
 function appendLog(message) {
@@ -101,6 +104,15 @@ function handleRadioLine(line) {
     ui.bandwidthActual.textContent = "Actual: " + actual + (automatic ? " (automatic)" : "");
   } else if (command === "Y" && /^[0-6]$/.test(parts[1] || "")) {
     ui.power.value = parts[1];
+  } else if (command === "W" && parts[1] === "0014" && /^\d{5}$/.test(parts[parts.length - 1] || "")) {
+    const stepUnits = Number(parts[parts.length - 1]);
+    if (stepUnits >= 1 && stepUnits <= 50000) {
+      confirmedFrequencyStepUnits = stepUnits;
+      frequencyStepSynced = true;
+      ui.frequencyStep.value = (stepUnits / 100).toFixed(2);
+      updateFrequencyStep();
+      ui.frequencyStep.disabled = transport.state !== "connected";
+    }
   } else if (command === "W" && parts[1] === "0004" && /^0000[0-9]$/.test(parts[parts.length - 1] || "")) {
     const level = Number(parts[parts.length - 1]);
     ui.squelchLevel.value = String(level);
@@ -172,15 +184,26 @@ ui.squelchLevel.addEventListener("change", () => {
   const level = Number(ui.squelchLevel.value);
   if (Number.isInteger(level) && level >= 0 && level <= 9) queue("W 0004 2 " + String(level).padStart(5, "0"));
 });
-ui.frequencyStep.value = String(DEFAULT_FREQUENCY_STEP_KHZ);
+ui.frequencyStep.value = DEFAULT_FREQUENCY_STEP_KHZ.toFixed(2);
 function updateFrequencyStep() {
   const stepKhz = Number(ui.frequencyStep.value);
-  if (!Number.isFinite(stepKhz) || stepKhz <= 0) return;
+  if (!Number.isFinite(stepKhz) || stepKhz < 0.01 || stepKhz > 500) return;
   const stepMhz = stepKhz / 1000;
   ui.rx.step = String(stepMhz);
   ui.tx.step = String(stepMhz);
 }
-ui.frequencyStep.addEventListener("change", updateFrequencyStep);
+ui.frequencyStep.addEventListener("change", () => {
+  const stepKhz = Number(ui.frequencyStep.value);
+  const stepUnits = Math.round(stepKhz * 100);
+  if (!Number.isFinite(stepKhz) || stepUnits < 1 || stepUnits > 50000) {
+    appendLog("! Frequency step must be from 0.01 to 500.00 kHz.");
+    ui.frequencyStep.value = (confirmedFrequencyStepUnits / 100).toFixed(2);
+    return;
+  }
+  ui.frequencyStep.value = (stepUnits / 100).toFixed(2);
+  updateFrequencyStep();
+  queue("W 0014 2 " + String(stepUnits).padStart(5, "0"));
+});
 updateFrequencyStep();
 ui.rx.addEventListener("change", () => setFrequency("F", ui.rx));
 ui.tx.addEventListener("change", () => setFrequency("T", ui.tx));
@@ -211,7 +234,7 @@ function renderLevels(signalRaw, noiseRaw) {
   ui.signalMeter.value = units;
   ui.signalS.textContent = "S" + units + " · radio floor " + floor + " dBm";
   ui.noise.textContent = rawToDbm(noiseRaw).toFixed(1) + " dBm";
-  ui.noiseMeter.value = noiseRaw;
+  ui.noiseMeter.value = Math.max(0, Math.min(70, noiseRaw));
 }
 function addKey(key) {
   const button = document.createElement("button");
