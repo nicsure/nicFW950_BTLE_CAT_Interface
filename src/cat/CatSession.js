@@ -45,7 +45,7 @@ export class CatSession {
   }
 
   refresh() {
-    for (const command of ["V", "M", "F", "T", "Q", "B", "Y", "Z"]) this.enqueue(command);
+    for (const command of ["V", "M", "F", "T", "Q", "B", "Y", "Z", "W 0004 2"]) this.enqueue(command);
   }
 
   enqueue(command) {
