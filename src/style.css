@@ -49,6 +49,9 @@ button:disabled,input:disabled,select:disabled{opacity:.5}
 .help{font-size:.75rem;margin:.35rem 0 0}
 .squelch-card,.meter-card{border:1px solid var(--border);border-radius:4px;padding:.45rem .55rem;background:var(--page-bg)}
 .squelch-card{display:flex;flex-direction:column;gap:.25rem}.squelch{font-size:.9rem}
+.squelch-level{display:flex;flex-direction:column;gap:.2rem;color:var(--muted);font-size:.78rem}
+.squelch-level input[type=range]{padding:0;accent-color:var(--accent)}
+.squelch-level small{font-size:.68rem}
 .squelch.open{color:var(--accent)}.squelch.closed{color:var(--muted)}
 .meter-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem;margin-top:.55rem}
 .meter-heading strong{font-variant-numeric:tabular-nums}
