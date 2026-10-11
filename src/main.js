@@ -234,7 +234,7 @@ function renderLevels(signalRaw, noiseRaw) {
   ui.signalMeter.value = units;
   ui.signalS.textContent = "S" + units + " · radio floor " + floor + " dBm";
   ui.noise.textContent = rawToDbm(noiseRaw).toFixed(1) + " dBm";
-  ui.noiseMeter.value = noiseRaw;
+  ui.noiseMeter.value = Math.max(0, Math.min(70, noiseRaw));
 }
 function addKey(key) {
   const button = document.createElement("button");
